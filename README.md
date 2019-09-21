@@ -10,4 +10,5 @@ Create a `.env` file with:
 ```
 GLOBAL_ID="EBAY-US" # change to your country code
 APP_NAME="your-ebay-app-name" # you can get one at https://developer.ebay.com/
+CURRENCY="USD"
 ```
