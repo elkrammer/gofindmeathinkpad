@@ -14,7 +14,9 @@ import (
 type Laptop struct {
     Id string
     Title string
+    CurrentPrice string
     Location string
+    URL string
 }
 
 func generate_search_url(global_id string, app_name string, keywords string, currency string) (string, error) {
@@ -74,10 +76,14 @@ func getLaptops(json string) []Laptop {
         title := gjson.Get(json, root + "title.0")
         itemId := gjson.Get(json, root + "itemId.0")
         location := gjson.Get(json, root + "location.0")
+        url := gjson.Get(json, root + "viewItemURL.0")
+        currentPrice := gjson.Get(json, root + "sellingStatus.0.currentPrice.0.__value__")
         laptop := Laptop{
             Id: itemId.String(),
             Title: title.String(),
+            CurrentPrice: currentPrice.String(),
             Location: location.String(),
+            URL: url.String(),
         }
         laptops = append(laptops, laptop)
     }
@@ -100,5 +106,5 @@ func main() {
 
     data := get_json(url)
     laptops := getLaptops(data)
-    fmt.Println(laptops[1].Title)
+    fmt.Printf("%+v\n", laptops[1])
 }
