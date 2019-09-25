@@ -7,6 +7,7 @@ import (
     "net/url"
     "os"
     "strconv"
+    "github.com/jedib0t/go-pretty/table"
     "github.com/joho/godotenv"
     "github.com/tidwall/gjson"
 )
@@ -46,6 +47,9 @@ func generate_search_url(global_id string, app_name string, keywords string, cur
     params.Add("itemFilter.value", "120")
     params.Add("itemFilter.paramName", "Currency")
     params.Add("itemFilter.paramValue", currency)
+    params.Add("sortOrder", "PricePlusShippingLowest")
+    params.Add("itemFilter.name", "LocatedIn")
+    params.Add("itemFilter.value", "US")
 
     u.RawQuery = params.Encode()
     return u.String(), err
@@ -106,5 +110,29 @@ func main() {
 
     data := get_json(url)
     laptops := getLaptops(data)
-    fmt.Printf("%+v\n", laptops[1])
+
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+
+    // configure table
+    t := table.NewWriter()
+    t.SetStyle(table.StyleLight)
+    t.SetOutputMirror(os.Stdout)
+    t.AppendHeader(table.Row{"ID", "Title", "Current Price", "Location", "URL"})
+
+    // render table
+    for i, v := range laptops {
+        id := i + 1
+        title := v.Title
+        price := v.CurrentPrice
+        location := v.Location
+        URL := v.URL
+        if title == "" || price == "" || location == "" || URL == "" {
+            break
+        }
+        t.AppendRow([]interface{}{id, title, price, location, URL})
+    }
+    t.Render()
 }
