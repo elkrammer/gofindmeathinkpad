@@ -1,6 +1,8 @@
 package main
 
 import (
+    "bytes"
+    "encoding/json"
     "fmt"
     "io/ioutil"
     "net/http"
@@ -94,6 +96,42 @@ func getLaptops(json string) []Laptop {
     return laptops
 }
 
+func truncateString(str string, num int) string {
+    truncatedString := str
+    if len(str) > num {
+        if num > 3 {
+            num -= 3
+        }
+        truncatedString = str[0:num] + "..."
+    }
+    return truncatedString
+}
+
+func shorten_url(url string) string {
+    api := "https://cleanuri.com/api/v1/shorten"
+    requestBody, err := json.Marshal(map[string]string {
+        "url": url,
+    })
+    if err != nil {
+        fmt.Println(err)
+    }
+    resp, err := http.Post(api, "application/json",  bytes.NewBuffer(requestBody))
+    if err != nil {
+        fmt.Println(err)
+    }
+    defer resp.Body.Close()
+
+    body, _ := ioutil.ReadAll(resp.Body)
+
+    shortened_url := gjson.Get(string(body), "result_url").String()
+    if err != nil {
+        fmt.Println("Couldn't shorten url")
+    }
+
+    return shortened_url
+}
+
+
 func main() {
     err := godotenv.Load()
     if err != nil {
@@ -125,10 +163,11 @@ func main() {
     // render table
     for i, v := range laptops {
         id := i + 1
-        title := v.Title
+        title := truncateString(v.Title, 50)
         price := v.CurrentPrice
         location := v.Location
-        URL := v.URL
+        URL := shorten_url(v.URL)
+
         if title == "" || price == "" || location == "" || URL == "" {
             break
         }
