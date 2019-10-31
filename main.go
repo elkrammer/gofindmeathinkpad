@@ -47,8 +47,6 @@ func generate_search_url(global_id string, app_name string, keywords string, cur
     params.Add("itemFilter.paramValue", currency)
     params.Add("itemFilter.name", "MaxPrice")
     params.Add("itemFilter.value", "120")
-    params.Add("itemFilter.paramName", "Currency")
-    params.Add("itemFilter.paramValue", currency)
     params.Add("sortOrder", "PricePlusShippingLowest")
     params.Add("itemFilter.name", "LocatedIn")
     params.Add("itemFilter.value", "US")
